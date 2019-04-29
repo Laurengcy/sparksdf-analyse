@@ -4,7 +4,7 @@
 @Github: https://github.com/laurengcy
 @LastEditors: laurengcy
 @Date: 2019-04-24 12:21:09
-@LastEditTime: 2019-04-24 12:27:58
+@LastEditTime: 2019-04-25 16:01:05
 '''
 
 """ 
@@ -16,8 +16,8 @@ get_col_stats(sparks_DF, exclude_col=[])
 import pyspark
 import pyspark.sql.types as types
 from pyspark.sql.functions import monotonically_increasing_id
-from pyspark_dist_explore import hist
-import matplotlib.pyplot as plt
+# from pyspark_dist_explore import hist
+# import matplotlib.pyplot as plt
 
 def get_shape(sparks_DF):
     n_rows = sparks_DF.count()
@@ -52,14 +52,14 @@ def get_distinct_col_values(sparks_DF, exclude_col=[], export=True, DF_name=''):
 
 
 # for numeric columns only
-def get_col_stats(sparks_DF, exclude_col=[]):
-    fig, ax = plt.subplots()
+# def get_col_stats(sparks_DF, exclude_col=[]):
+#     fig, ax = plt.subplots()
 
-    for struct_field in sparks_DF.schema.fields:
-        if struct_field.name not in exclude_col:
-            if isinstance(struct_field.dataType, types.NumericType):
-                sparks_DF.describe(struct_field.name).show()
-                hist(ax, sparks_DF.select(struct_field.name), bins = 3, color=['red'])
-                plt.show()
-    return None
+#     for struct_field in sparks_DF.schema.fields:
+#         if struct_field.name not in exclude_col:
+#             if isinstance(struct_field.dataType, types.NumericType):
+#                 sparks_DF.describe(struct_field.name).show()
+#                 hist(ax, sparks_DF.select(struct_field.name), bins = 3, color=['red'])
+#                 plt.show()
+#     return None
     
