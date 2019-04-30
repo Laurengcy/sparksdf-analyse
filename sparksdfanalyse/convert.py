@@ -4,7 +4,7 @@
 @Github: https://github.com/laurengcy
 @LastEditors: laurengcy
 @Date: 2019-04-30 11:29:04
-@LastEditTime: 2019-04-30 11:36:32
+@LastEditTime: 2019-04-30 11:44:00
 '''
 
 import pyspark
@@ -19,7 +19,7 @@ def convertToArray(series, delimiter, rm_whitespace):
         return series.map(lambda strng: strng.split(delimiter))
 
 def ColtoArray(sparks_DF, colname, delimiter=',', rm_whitespace=True):
-    sparks_DF = sparks_DF.withColumn(colname, convertToArray(postalData.select(colname), delimiter, rm_whitespace))
+    sparks_DF = sparks_DF.withColumn(colname, convertToArray(postalData[colname], delimiter, rm_whitespace))
 
     
     
