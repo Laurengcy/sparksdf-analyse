@@ -1,1 +1,2 @@
 pysparks >=2.4.1
+prettytable >=0.7.2

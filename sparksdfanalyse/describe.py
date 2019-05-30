@@ -3,28 +3,33 @@
 @Author: laurengcy
 @Github: https://github.com/laurengcy
 @LastEditors: laurengcy
-@Date: 2019-04-24 12:21:09
-@LastEditTime: 2019-04-25 16:01:05
+@Date: 2019-04-29 11:30:44
+@LastEditTime: 2019-05-14 10:32:10
 '''
 
-""" 
-get_shape(sparks_DF)
-get_distinct_col_values(sparks_DF, exclude_col=[], export=True, DF_name='')
-get_col_stats(sparks_DF, exclude_col=[])
-"""
-
 import pyspark
-import pyspark.sql.types as types
+import pyspark.sql.types as type
 from pyspark.sql.functions import monotonically_increasing_id
-# from pyspark_dist_explore import hist
-# import matplotlib.pyplot as plt
 
 def get_shape(sparks_DF):
     n_rows = sparks_DF.count()
     n_columns = len(sparks_DF.columns)
     print ('Data Shape: (%d rows, %d columns)' % (n_rows,n_columns))
-    print (sparks_DF.schema.fields)
     return n_rows, n_columns
+
+def show_schema_n_head(sparks_DF, n=1):
+    print ('################ SCHEMA ################')
+    sparks_DF.printSchema()
+    print ('################ SHOW ################')
+    sparks_DF.show(n)
+    return sparks_DF.SCHEMA
+ 
+
+def show_n_save(sparks_DF, filename, partition=1):
+    sparks_DF.repartition(partition).write.option('header', True).csv(filename + '.csv')
+    sparks_DF.show()
+    return None
+
 
 def get_distinct_col_values(sparks_DF, exclude_col=[], export=True, DF_name=''):
     if export:
