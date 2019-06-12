@@ -4,7 +4,7 @@
 @Github: https://github.com/laurengcy
 @LastEditors: laurengcy
 @Date: 2019-04-29 11:30:44
-@LastEditTime: 2019-05-14 10:32:10
+@LastEditTime: 2019-06-03 15:18:39
 '''
 
 import pyspark
@@ -26,7 +26,7 @@ def show_schema_n_head(sparks_DF, n=1):
  
 
 def show_n_save(sparks_DF, filename, partition=1):
-    sparks_DF.repartition(partition).write.option('header', True).csv(filename + '.csv')
+    sparks_DF
     sparks_DF.show()
     return None
 
@@ -53,7 +53,7 @@ def get_distinct_col_values(sparks_DF, exclude_col=[], export=True, DF_name=''):
         # drop id columns
         DF = DF.select([c for c in DF.columns if c in wanted_cols])
         DF.toPandas().to_csv(DF_name + ' distinct_values_of_each_col.csv')
-    return None
+    return DF
 
 
 # for numeric columns only

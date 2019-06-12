@@ -4,7 +4,7 @@
 @Github: https://github.com/laurengcy
 @LastEditors: laurengcy
 @Date: 2019-04-30 11:29:04
-@LastEditTime: 2019-05-09 10:39:25
+@LastEditTime: 2019-06-07 10:13:19
 '''
 
 import pyspark
@@ -24,6 +24,9 @@ def ColStringToColArray(sparks_DF, colname, delimiter=',', rm_whitespace=True):
 def ColToList(sparks_DF, colname):
     return sparks_DF.select(colname).rdd.flatMap(lambda x:x).collect()
     # return F.collect_list(sparks_DF.select(colname)).collect()
+
+def RowToList(sparks_DF):
+    return sparks_DF
 
 def replace_whitespace_colnames(sparks_DF):
     old_colnames = sparks_DF.columns
