@@ -18,23 +18,23 @@ def StringToArray(series, delimiter, rm_whitespace):
     else:
         return series.map(lambda strng: strng.split(delimiter))
 
-def ColStringToColArray(sparks_DF, colname, delimiter=',', rm_whitespace=True):
-    sparks_DF = sparks_DF.withColumn(colname, StringToArray(sparks_DF[colname], delimiter, rm_whitespace))
+def ColStringToColArray(DF, colname, delimiter=',', rm_whitespace=True):
+    DF = DF.withColumn(colname, StringToArray(DF[colname], delimiter, rm_whitespace))
 
-def ColToList(sparks_DF, colname):
-    return sparks_DF.select(colname).rdd.flatMap(lambda x:x).collect()
-    # return F.collect_list(sparks_DF.select(colname)).collect()
+def ColToList(DF, colname):
+    return DF.select(colname).rdd.flatMap(lambda x:x).collect()
+    # return F.collect_list(DF.select(colname)).collect()
 
-def RowToList(sparks_DF):
-    return sparks_DF
+def RowToList(DF):
+    return DF
 
-def replace_whitespace_colnames(sparks_DF):
-    old_colnames = sparks_DF.columns
+def replace_whitespace_colnames(DF):
+    old_colnames = DF.columns
     new_colnames = []
     for name in old_colnames:
         new_colnames.append(name.replace(' ', '_'))
     for i in range(len(old_colnames)):
-        sparks_DF = sparks_DF.withColumnRenamed(old_colnames[i], new_colnames[i])
-    return sparks_DF
+        DF = DF.withColumnRenamed(old_colnames[i], new_colnames[i])
+    return DF
    
 

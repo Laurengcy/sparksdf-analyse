@@ -4,67 +4,61 @@
 @Github: https://github.com/laurengcy
 @LastEditors: laurengcy
 @Date: 2019-04-29 11:30:44
-@LastEditTime: 2019-06-03 15:18:39
+@LastEditTime: 2019-06-12 17:07:46
 '''
 
 import pyspark
 import pyspark.sql.types as type
 from pyspark.sql.functions import monotonically_increasing_id
+from sparksdfanalyse.convert import ColToList
+from scipy import stats
 
-def get_shape(sparks_DF):
-    n_rows = sparks_DF.count()
-    n_columns = len(sparks_DF.columns)
+
+def get_shape(DF):
+    n_rows = DF.count()
+    n_columns = len(DF.columns)
     print ('Data Shape: (%d rows, %d columns)' % (n_rows,n_columns))
     return n_rows, n_columns
 
-def show_schema_n_head(sparks_DF, n=1):
+def show_schema_n_head(DF, n=1):
     print ('################ SCHEMA ################')
-    sparks_DF.printSchema()
+    DF.printSchema()
     print ('################ SHOW ################')
-    sparks_DF.show(n)
-    return sparks_DF.SCHEMA
+    DF.show(n)
+    return DF.SCHEMA
  
 
-def show_n_save(sparks_DF, filename, partition=1):
-    sparks_DF
-    sparks_DF.show()
+def show_n_save(DF, filename, partition=1):
+    DF
+    DF.show()
     return None
 
 
-def get_distinct_col_values(sparks_DF, exclude_col=[], export=True, DF_name=''):
+def get_distinct_col_values(DF, exclude_col=[], export=True, DF_name=''):
     if export:
         DF = None
     wanted_cols =[]
-    for col_name in sparks_DF.columns:
+    for col_name in DF.columns:
         if col_name not in exclude_col:
             if export:
                 wanted_cols.append(col_name)
                 if DF==None:
-                    DF = sparks_DF.select(col_name).distinct().orderBy(col_name, ascending=True)
+                    DF = DF.select(col_name).distinct().orderBy(col_name, ascending=True)
                     # add id col to merge columns
                     DF = DF.withColumn("id", monotonically_increasing_id())
                 else:
                     # add id col to merge columns
-                    add_this = sparks_DF.select(col_name).distinct().withColumn("id", monotonically_increasing_id())
+                    add_this = DF.select(col_name).distinct().withColumn("id", monotonically_increasing_id())
                     DF = DF.join(add_this,on='id' ,how="full")
             else:
-                sparks_DF.select(col_name).distinct().show()
+                DF.select(col_name).distinct().show()
     if export:
         # drop id columns
         DF = DF.select([c for c in DF.columns if c in wanted_cols])
         DF.toPandas().to_csv(DF_name + ' distinct_values_of_each_col.csv')
     return DF
 
-
-# for numeric columns only
-# def get_col_stats(sparks_DF, exclude_col=[]):
-#     fig, ax = plt.subplots()
-
-#     for struct_field in sparks_DF.schema.fields:
-#         if struct_field.name not in exclude_col:
-#             if isinstance(struct_field.dataType, types.NumericType):
-#                 sparks_DF.describe(struct_field.name).show()
-#                 hist(ax, sparks_DF.select(struct_field.name), bins = 3, color=['red'])
-#                 plt.show()
-#     return None
-    
+def get_outliers_and_filtered_data(DF, colname, z_threshold=3.0):
+    data = np.array(ColToList(DF, colname))
+    z_scores = np.abs(stats.zscore(data))
+    return data[z_scores>=z_threshold], data[z_scores<z_threshold]

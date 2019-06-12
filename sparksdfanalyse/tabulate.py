@@ -13,17 +13,17 @@ from prettytable import PrettyTable
 from pyspark.sql.window import Window
 
 
-def countNullRows(sparks_DF, colnames=None, examples=True, examples_limit=3):
+def countNullRows(DF, colnames=None, examples=True, examples_limit=3):
     counts = []
     examples = {}
     if colnames is None:
-        colnames = sparks_DF.columns
+        colnames = DF.columns
         assert isinstance(colnames, list)
     for colname in colnames:
-        count = sparks_DF.filter((sparks_DF[colname] == '') | sparks_DF[colname].isNull()).count()
+        count = DF.filter((DF[colname] == '') | DF[colname].isNull()).count()
         counts.append([colname, count])
         if count >0:
-            examples[colname]= sparks_DF.filter((sparks_DF[colname] == '') | sparks_DF[colname].isNull()).limit(examples_limit)
+            examples[colname]= DF.filter((DF[colname] == '') | DF[colname].isNull()).limit(examples_limit)
     counts_T = PrettyTable(['Colname', 'NullCounts'])
     for l in counts:
         counts_T.add_row(l)
@@ -31,10 +31,10 @@ def countNullRows(sparks_DF, colnames=None, examples=True, examples_limit=3):
     return [counts, examples]
     
 
-def get_percentage(sparks_DF, numeral_colname, round_to=2, colname='percent'):
-    sparks_DF = sparks_DF.withColumn(colname, 100*F.col(numeral_colname)/F.sum(numeral_colname).over(Window.partitionBy()))
-    sparks_DF = sparks_DF.withColumn(colname, F.round(F.col(colname), round_to))
-    sparks_DF = sparks_DF.orderBy(F.asc(colname))
-    return sparks_DF
+def get_percentage(DF, numeral_colname, round_to=2, colname='percent'):
+    DF = DF.withColumn(colname, 100*F.col(numeral_colname)/F.sum(numeral_colname).over(Window.partitionBy()))
+    DF = DF.withColumn(colname, F.round(F.col(colname), round_to))
+    DF = DF.orderBy(F.asc(colname))
+    return DF
     
  
