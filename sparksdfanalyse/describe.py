@@ -4,12 +4,12 @@
 @Github: https://github.com/laurengcy
 @LastEditors: laurengcy
 @Date: 2019-04-29 11:30:44
-@LastEditTime: 2019-06-24 15:20:26
+@LastEditTime: 2019-06-24 16:30:46
 '''
 
 import pyspark
 import pyspark.sql.types as type
-from pyspark.sql.functions import monotonically_increasing_id
+import pyspark.sql.functions as F
 from sparksdfanalyse.convert import ColToList
 from scipy import stats
 import numpy as np
@@ -47,7 +47,7 @@ def get_distinct_col_values(DF, exclude_col=[], export=True, DF_name=''):
                 if DF==None:
                     DF = DF.select(col_name).distinct().orderBy(col_name, ascending=True)
                     # add id col to merge columns
-                    DF = DF.withColumn("id", monotonically_increasing_id())
+                    DF = DF.withColumn("id", F.monotonically_increasing_id())
                 else:
                     # add id col to merge columns
                     add_this = DF.select(col_name).distinct().withColumn("id", monotonically_increasing_id())
@@ -61,7 +61,7 @@ def get_distinct_col_values(DF, exclude_col=[], export=True, DF_name=''):
     return DF
 
 def get_stats(DF, colname):
-    stats_as_rows_list = DF.select('colname').describe().collect()
+    stats_as_rows_list = DF.select(colname).describe().collect()
     stats = {}
     for stat_name, value in stats_as_rows_list:
         stats[stat_name] = float(value)
@@ -70,8 +70,8 @@ def get_stats(DF, colname):
 
 def get_outliers_and_filtered_data(DF, colname, z_threshold=3.0):
     stats = get_stats(DF, colname)
-    outlier_df = DF.filter(lambda x: math.fabs(x -stats['mean']) < z_threshold* stats['stddev'])
-    filtered_df = DF.filter(lambda x: math.fabs(x -stats['mean']) >= z_threshold* stats['stddev'])
+    outlier_df = DF.filter(F.abs(F.col(colname)-F.lit(stats['mean'])) >= F.lit(z_threshold*stats['stddev']))
+    filtered_df = DF.filter(F.abs(F.col(colname)-F.lit(stats['mean'])) < F.lit(z_threshold*stats['stddev']))
     return outlier_df, filtered_df
     # data = np.array(ColToList(DF, colname))
     # z_scores = np.abs(stats.zscore(data))
