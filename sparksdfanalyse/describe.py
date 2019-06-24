@@ -4,7 +4,7 @@
 @Github: https://github.com/laurengcy
 @LastEditors: laurengcy
 @Date: 2019-04-29 11:30:44
-@LastEditTime: 2019-06-12 17:07:46
+@LastEditTime: 2019-06-24 15:20:26
 '''
 
 import pyspark
@@ -12,6 +12,8 @@ import pyspark.sql.types as type
 from pyspark.sql.functions import monotonically_increasing_id
 from sparksdfanalyse.convert import ColToList
 from scipy import stats
+import numpy as np
+import math
 
 
 def get_shape(DF):
@@ -28,8 +30,8 @@ def show_schema_n_head(DF, n=1):
     return DF.SCHEMA
  
 
-def show_n_save(DF, filename, partition=1):
-    DF
+def show_n_save(DF, filename):
+    DF.write.mode('overwrite').option("header","true").csv(filename + '.csv')
     DF.show()
     return None
 
@@ -58,7 +60,19 @@ def get_distinct_col_values(DF, exclude_col=[], export=True, DF_name=''):
         DF.toPandas().to_csv(DF_name + ' distinct_values_of_each_col.csv')
     return DF
 
+def get_stats(DF, colname):
+    stats_as_rows_list = DF.select('colname').describe().collect()
+    stats = {}
+    for stat_name, value in stats_as_rows_list:
+        stats[stat_name] = float(value)
+    # count, mean, stddev, min, max
+    return stats
+
 def get_outliers_and_filtered_data(DF, colname, z_threshold=3.0):
-    data = np.array(ColToList(DF, colname))
-    z_scores = np.abs(stats.zscore(data))
-    return data[z_scores>=z_threshold], data[z_scores<z_threshold]
+    stats = get_stats(DF, colname)
+    outlier_df = DF.filter(lambda x: math.fabs(x -stats['mean']) < z_threshold* stats['stddev'])
+    filtered_df = DF.filter(lambda x: math.fabs(x -stats['mean']) >= z_threshold* stats['stddev'])
+    return outlier_df, filtered_df
+    # data = np.array(ColToList(DF, colname))
+    # z_scores = np.abs(stats.zscore(data))
+    # return data[z_scores>=z_threshold], data[z_scores<z_threshold]
