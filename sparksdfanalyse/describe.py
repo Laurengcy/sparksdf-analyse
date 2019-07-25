@@ -4,7 +4,7 @@
 @Github: https://github.com/laurengcy
 @LastEditors: laurengcy
 @Date: 2019-04-29 11:30:44
-@LastEditTime: 2019-06-24 16:30:46
+@LastEditTime: 2019-07-01 11:43:08
 '''
 
 import pyspark
@@ -70,8 +70,8 @@ def get_stats(DF, colname):
 
 def get_outliers_and_filtered_data(DF, colname, z_threshold=3.0):
     stats = get_stats(DF, colname)
-    outlier_df = DF.filter(F.abs(F.col(colname)-F.lit(stats['mean'])) >= F.lit(z_threshold*stats['stddev']))
-    filtered_df = DF.filter(F.abs(F.col(colname)-F.lit(stats['mean'])) < F.lit(z_threshold*stats['stddev']))
+    outlier_df = DF.filter(F.abs(F.col(colname)-F.lit(stats['mean'])) > F.lit(z_threshold*stats['stddev']))
+    filtered_df = DF.filter(F.abs(F.col(colname)-F.lit(stats['mean'])) <= F.lit(z_threshold*stats['stddev']))
     return outlier_df, filtered_df
     # data = np.array(ColToList(DF, colname))
     # z_scores = np.abs(stats.zscore(data))

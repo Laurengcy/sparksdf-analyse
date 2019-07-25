@@ -4,7 +4,7 @@
 @Github: https://github.com/laurengcy
 @LastEditors: laurengcy
 @Date: 2019-04-30 11:29:04
-@LastEditTime: 2019-06-07 10:13:19
+@LastEditTime: 2019-07-25 10:36:28
 '''
 
 import pyspark
@@ -37,4 +37,8 @@ def replace_whitespace_colnames(DF):
         DF = DF.withColumnRenamed(old_colnames[i], new_colnames[i])
     return DF
    
-
+def get_pddf_from_vector_col(DF, colname):
+    def extract(row):
+        return tuple(row[colname].toArray().tolist())
+    
+    return DF.rdd.map(extract).toDF([colname]).toPandas()
