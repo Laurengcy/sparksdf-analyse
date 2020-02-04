@@ -28,13 +28,21 @@ def ColToList(DF, colname):
 def RowToList(DF):
     return DF
 
-def replace_whitespace_colnames(DF):
+def get_lowercase_stripped_colnames(DF):
     old_colnames = DF.columns
-    new_colnames = []
-    for name in old_colnames:
-        new_colnames.append(name.replace(' ', '_'))
-    for i in range(len(old_colnames)):
-        DF = DF.withColumnRenamed(old_colnames[i], new_colnames[i])
+    
+    remove = string.punctuation
+    remove = remove.replace("_", "") # don't remove underscores
+    pattern = r"[{}]".format(remove) # create the pattern
+    
+    for colname in DF.columns:
+        new_name = colname.strip()
+        new_name = re.sub(pattern, "", new_name) 
+        new_name = new_name.replace(' ', '_')
+        new_name = new_name.lower()
+        
+        DF = DF.withColumnRenamed(colname, new_name)
+
     return DF
    
 def get_pddf_from_vector_col(DF, colname):
