@@ -5,7 +5,7 @@ E.g. colname_regex_tuples
 '''
 
 
-def print_pyspark_filter_combined_col_regex_function(df_name, colname_regex_tuples, anti=False):
+def print_pyspark_filter_combined_col_regex_function(colname_regex_tuples, df_name='df', anti=False):
     
     print (f'{df_name}.filter(')
     for idx in range(len(colname_regex_tuples)):

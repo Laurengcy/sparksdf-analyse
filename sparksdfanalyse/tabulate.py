@@ -37,4 +37,10 @@ def get_percentage(DF, numeral_colname, round_to=2, colname='percent'):
     DF = DF.orderBy(F.asc(colname))
     return DF
     
- 
+ def get_NA_counts(DF, subset_cols=None):
+    if subset_cols is None:
+        subset_cols=DF.columns
+    NA_counts = DF.select(
+    [F.count(F.when(F.isnan(colname) | F.col(colname).isNull(), colname)).alias(colname) for colname in subset_cols]).toPandas().transpose().rename(columns={0: 'NA_counts'})
+        
+    return NA_counts 
