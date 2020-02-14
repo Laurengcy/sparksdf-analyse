@@ -43,4 +43,10 @@ def checkConsistentColumns(data_dir):
 def getColumns(file_dir):
     with open(file_dir, newline='') as content:
         return next(csv.reader(content), [])
-    
+
+def get_duplicates(df, cols_to_check):
+    return df.join(
+        df.groupBy(cols_to_check).agg((F.count("*")>1).cast("int").alias("duplicated")),
+        on=cols_to_check,
+        how="inner"
+    ).filter(F.col('duplicated')==1)
