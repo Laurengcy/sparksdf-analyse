@@ -1,3 +1,5 @@
+import boto3
+
 def download_folder_from_s3(aws_access_key_id_, aws_secret_access_key_, aws_session_token_,
                             bucket_addr, folder_prefix, desti_folder_path):
     S3_RESOURCE = boto3.resource(
