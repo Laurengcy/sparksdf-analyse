@@ -1,3 +1,0 @@
-Tx ID,From,To,Merchant,LE,Customer,Amount,Type,Status,Voidable,Tokens,Amount(SGD),Reson Code,Remarks,System User,Date
-5bd9d79739eccc42146b5c37,KrisPay Promo Credit,12345678,NA,NA,qewrgt,1,Credited,Successful,FALSE,500,0,Promo,,KrisPay Admin,Thu Nov 01 2018 00:25:59 GMT+0800
-5bd9e59739eccc42146b5c38,KrisPay Promo Credit,12345678,NA,NA,sfadgs,1,Credited,Successful,FALSE,500,0,Promo,,KrisPay Admin,Thu Nov 01 2018 01:25:43 GMT+0800
